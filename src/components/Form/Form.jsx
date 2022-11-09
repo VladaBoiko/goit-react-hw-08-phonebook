@@ -1,5 +1,7 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContacts } from 'redux/operations';
+import { getContacts } from 'redux/selectors';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { Input, Forma, Label, Button, ErMessage } from './Form.styled';
@@ -9,15 +11,30 @@ const schema = yup.object().shape({
 });
 const formValues = {
   name: '',
-  phone: '',
+  number: '',
 };
 
 export const AddForm = () => {
-  console.log('addForm');
+  const contacts = useSelector(getContacts);
   const dispatch = useDispatch();
   const handleSubmit = (values, { resetForm }) => {
-    console.log(values);
-    dispatch(addContacts(values));
+    if (
+      contacts.items.some(
+        contact =>
+          contact.name.toLowerCase() === values.name.toLowerCase().trim()
+      )
+    ) {
+      Notify.failure('Such a contact exists in your contacts list...');
+    }
+    if (
+      !contacts.items.some(
+        contact =>
+          contact.name.toLowerCase() === values.name.toLowerCase().trim()
+      )
+    ) {
+      dispatch(addContacts(values));
+      Notify.success('Contact created? horraaaaaaaay)');
+    }
     resetForm();
   };
 
@@ -43,7 +60,7 @@ export const AddForm = () => {
           Number
           <Input
             type="tel"
-            name="phone"
+            name="number"
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required

@@ -56,3 +56,11 @@ export const Button = styled.button`
     background-color: #0f3305;
   }
 `;
+export const Title = styled.h1`
+  font-size: 35px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #135600;
+  text-align: center;
+  text-decoration: underline;
+`;
